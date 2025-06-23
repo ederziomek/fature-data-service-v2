@@ -4,12 +4,8 @@ const logger = require('../utils/logger');
 class DataModel {
     constructor() {
         this.pool = new Pool({
-            host: process.env.DB_HOST,
-            port: process.env.DB_PORT,
-            database: process.env.DB_NAME,
-            user: process.env.DB_USER,
-            password: process.env.DB_PASSWORD,
-            ssl: process.env.DB_SSL === 'true',
+            connectionString: process.env.DATABASE_URL,
+            ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
             min: parseInt(process.env.DB_POOL_MIN) || 2,
             max: parseInt(process.env.DB_POOL_MAX) || 20,
         });
