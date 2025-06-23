@@ -64,7 +64,15 @@ class ConfigClient {
                 return cached;
             }
 
-            // Buscar do serviço
+            // Para configurações CPA, usar endpoints específicos
+            if (key === 'cpa_level_amounts') {
+                return await this.getCpaLevelAmounts();
+            }
+            if (key === 'cpa_validation_rules') {
+                return await this.getCpaValidationRules();
+            }
+
+            // Para outras configurações, usar endpoint genérico
             const response = await this.httpClient.get(`/config/${key}/value`);
             
             if (response.data.success) {
