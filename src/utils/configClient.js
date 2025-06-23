@@ -317,7 +317,8 @@ class ConfigClient {
     // Health check
     async healthCheck() {
         try {
-            const response = await this.httpClient.get('/health');
+            // Usar endpoint correto do Config Service
+            const response = await this.httpClient.get('/api/v1/health');
             return response.data;
         } catch (error) {
             throw new Error(`Config Service indisponível: ${error.message}`);
