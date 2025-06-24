@@ -206,6 +206,18 @@ class DataServiceApp {
             const { createTables } = require('./database/migrate');
             await createTables();
             
+            // Inicializar sistema ETL
+            const { etlManager } = require('./etl');
+            try {
+                await etlManager.initialize();
+                logger.info('✅ Sistema ETL inicializado com sucesso');
+            } catch (etlError) {
+                logger.warn('⚠️ Sistema ETL não pôde ser inicializado', {
+                    error: etlError.message
+                });
+                // Continuar sem ETL se houver erro
+            }
+            
             this.server = this.app.listen(this.port, this.host, () => {
                 logger.info(`🚀 Data Service V2 iniciado em http://${this.host}:${this.port}`);
                 logger.info(`📚 Documentação disponível em http://${this.host}:${this.port}/api/v1/docs`);
@@ -224,6 +236,18 @@ class DataServiceApp {
 
     async gracefulShutdown(signal) {
         logger.info(`Iniciando shutdown graceful devido a: ${signal}`);
+
+        // Parar sistema ETL
+        try {
+            const { etlManager } = require('./etl');
+            if (etlManager.isRunning) {
+                logger.info('📴 Parando sistema ETL...');
+                await etlManager.stop();
+                logger.info('✅ Sistema ETL parado');
+            }
+        } catch (error) {
+            logger.error('❌ Erro ao parar sistema ETL:', error);
+        }
 
         // Fechar servidor HTTP
         if (this.server) {

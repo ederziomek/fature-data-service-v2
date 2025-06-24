@@ -1,5 +1,6 @@
 const express = require('express');
 const DataController = require('../controllers/dataController');
+const etlRoutes = require('./etlRoutes');
 const { 
     validate, 
     schemas, 
@@ -21,6 +22,10 @@ router.get('/health', dataController.healthCheck.bind(dataController));
 
 // Aplicar autenticação para todas as rotas abaixo
 router.use(authenticate);
+
+// ===== ROTAS ETL =====
+// Sistema ETL para sincronização com banco robusto
+router.use('/etl', etlRoutes);
 
 // ===== ROTAS DE SINCRONIZAÇÃO =====
 
